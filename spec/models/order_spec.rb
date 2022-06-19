@@ -41,7 +41,7 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  context 'when order, Salami Large with ingredients has discount and promotion' do
+  context 'when order, 4 X Salami Small with ingredients has discount and promotion' do
     it 'estimates total_price' do
       order = described_class.new(discount_code: 'SAVE5', promotion_code: ['2FOR1'])
       order.save!
@@ -51,13 +51,23 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  context 'when order, Salami Large with ingredients has discount and multiple promotion' do
+  context 'when order, 4 X Salami Small with ingredients has discount and multiple promotion' do
     it 'estimates total_price' do
       order = described_class.new(discount_code: 'SAVE5', promotion_code: %w[2FOR1 2FOR1])
       order.save!
       items = (1..4).collect { { name: 'Salami', size: 'Small', add: ['Cheese'], remove: ['Onions'] } }
       order.items.create(items)
       expect(order.estimate_total_price).to eq((4 * (6 * 0.7 + 2) - 2 * (6 * 0.7)) * 0.95)
+    end
+  end
+
+  context 'when order, 2 X Salami Small with ingredients has discount and multiple promotion' do
+    it 'estimates total_price' do
+      order = described_class.new(discount_code: 'SAVE5', promotion_code: %w[2FOR1 2FOR1])
+      order.save!
+      items = (1..2).collect { { name: 'Salami', size: 'Small', add: ['Cheese'], remove: ['Onions'] } }
+      order.items.create(items)
+      expect(order.estimate_total_price).to eq((2 * (6 * 0.7 + 2) - (6 * 0.7)) * 0.95)
     end
   end
 end

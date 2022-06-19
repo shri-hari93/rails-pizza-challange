@@ -40,13 +40,14 @@ class Order < ApplicationRecord
   end
 
   def promotion_deduction
-    promotion_code&.filter_map do |code|
-      promotion_deduction_per_code(code) if eligible_for_promotion(code)
+    promotion_code&.filter_map&.with_index do |code, index|
+      promotion_deduction_per_code(code) if eligible_for_promotion(code, index + 1)
     end&.sum || 0
   end
 
-  def eligible_for_promotion(code)
-    promotions(code) ? total_items_under_promotion(code) >= promotions(code)['from'] : false
+  # times indicates each additional promotion is valid for deduction
+  def eligible_for_promotion(code, times)
+    promotions(code) ? ((total_items_under_promotion(code) / times) >= promotions(code)['from']) : false
   end
 
   def total_items_under_promotion(code)
