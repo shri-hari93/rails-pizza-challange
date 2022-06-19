@@ -36,7 +36,7 @@ class Order < ApplicationRecord
   end
 
   def discount_percent
-    discounts(discount_code) ? discounts(discount_code)['deduction_in_percent'] : 0
+    discounts(discount_code)&.[] 'deduction_in_percent' || 0
   end
 
   def promotion_deduction
