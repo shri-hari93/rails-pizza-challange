@@ -1,13 +1,13 @@
+# frozen_string_literal: true
+
 class OrdersController < ApplicationController
-  def new
-  end
-
-  def create
-  end
-
   def index
+    @orders = Order.open
   end
 
-  def generate
+  def update
+    order = Order.find(params[:id])
+    order.update(completed: true)
+    redirect_to action: :index
   end
 end

@@ -28,10 +28,10 @@ ActiveRecord::Schema.define(version: 2022_06_18_084852) do
   end
 
   create_table "orders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.boolean "state", default: true
+    t.boolean "completed", default: false
     t.string "promotion_code", array: true
     t.string "discount_code"
-    t.decimal "total_price", default: "0.0"
+    t.float "total_price", default: 0.0
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
