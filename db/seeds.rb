@@ -7,7 +7,7 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 case Rails.env
-when "development"
+when 'development'
   order = Order.new
   order.items.build(name: 'Tonno', size: 'Large')
   order.save!
