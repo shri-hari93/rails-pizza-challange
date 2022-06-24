@@ -1,5 +1,3 @@
-inherit_from: .rubocop_todo.yml
-
 require: 
   - rubocop-performance
   - rubocop-rails
@@ -10,6 +8,9 @@ AllCops:
     - 'db/**/*'
     - 'script/**/*'
     - 'bin/**/*'
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
 
 Layout/LineLength:
   Max: 120

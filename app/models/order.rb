@@ -20,19 +20,21 @@ class Order < ApplicationRecord
   end
 
   def items_price
-    items.inject(0) { |price, item| price + cost_of_pizza(item.name, item.size) + cost_of_ingredients(item) }
+    items.inject(0) do |price, item|
+      price + cost_of_pizza(name: item.name, size: item.size, elements: item.add)
+    end
   end
 
-  def cost_of_pizza(name, size)
-    pizzas(name) * size_multipliers(size)
+  def cost_of_pizza(name:, size:, elements: nil)
+    (pizzas(name) + cost_of_ingredients(elements)) * size_multipliers(size)
   end
 
-  def cost_of_ingredients(item)
-    item.add&.inject(0) { |price, type| price + ingredients(type) } || 0
+  def cost_of_ingredients(elements)
+    elements&.inject(0) { |price, type| price + ingredients(type) } || 0
   end
 
   def discount
-    1 - discount_percent.to_f / 100
+    1 - (discount_percent.to_f / 100)
   end
 
   def discount_percent
@@ -40,14 +42,13 @@ class Order < ApplicationRecord
   end
 
   def promotion_deduction
-    promotion_code&.filter_map&.with_index do |code, index|
-      promotion_deduction_per_code(code) if eligible_for_promotion(code, index + 1)
+    promotion_code&.uniq&.filter_map do |code|
+      promotion_deduction_per_code(code) if eligible_for_promotion(code)
     end&.sum || 0
   end
 
-  # times indicates each additional promotion is valid for deduction
-  def eligible_for_promotion(code, times)
-    promotions(code) ? ((total_items_under_promotion(code) / times) >= promotions(code)['from']) : false
+  def eligible_for_promotion(code)
+    promotions(code).present?
   end
 
   def total_items_under_promotion(code)
@@ -55,8 +56,9 @@ class Order < ApplicationRecord
   end
 
   def promotion_deduction_per_code(code)
-    reduction = (promotions(code)['from'] - promotions(code)['to']).to_f
-    cost_of_pizza(promotions(code)['target'], promotions(code)['target_size']) * reduction
+    reduction = promotions(code)['from'] - promotions(code)['to']
+    times = total_items_under_promotion(code) / promotions(code)['from']
+    cost_of_pizza(name: promotions(code)['target'], size: promotions(code)['target_size']) * reduction * times
   end
 
   DATA_CONFIG.each_key do |key|

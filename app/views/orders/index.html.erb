@@ -8,10 +8,13 @@
         <td>
             <table>
                 <tr>id: <%= order.id %><br/></tr>
-                <tr>Created: <%= display_time(order.created_at) %><br/><p></p></tr>
+                <tr>Created: <%= display_time(order.created_at) %><br/></tr>
+                <tr>Promotion Codes: <%= display_promotion_codes(order.promotion_code) %><br/></tr>
+                <tr>Discount Codes: <%= display_discount_code(order.discount_code) %><br/></tr>
+                <tr><p></p></tr>
                 <tr>Total Price: <%= display_price_with_currency(order.total_price) %></tr>
                 <tr><p></p></tr>
-                <tr><%= button_to "Generate", { action: "update", id: order.id }, method: :patch %></tr>
+                <tr><%= button_to "Complete", { action: "update", id: order.id }, method: :patch %></tr>
             </table>
         </td>
         <td>
