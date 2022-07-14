@@ -1,0 +1,41 @@
+
+<h1>Orders</h1>
+<% @orders.each do |order| %>
+    <hr>
+    <p></p>
+    <table>
+    <tr>
+        <td>
+            <table>
+                <tr>id: <%= order.id %><br/></tr>
+                <tr>Created: <%= display_time(order.created_at) %><br/></tr>
+                <tr>Promotion Codes: <%= display_promotion_codes(order.promotion_code) %><br/></tr>
+                <tr>Discount Codes: <%= display_discount_code(order.discount_code) %><br/></tr>
+                <tr><p></p></tr>
+                <tr>Total Price: <%= display_price_with_currency(order.total_price) %></tr>
+                <tr><p></p></tr>
+                <tr><%= button_to "Complete", { action: "update", id: order.id }, method: :patch %></tr>
+            </table>
+        </td>
+        <td>
+            Items:
+            <ul>
+                <% order.items&.each do |item| %>
+                    <li><%= display_item(item) %>
+                        <ul>
+                            <% if item.add.present? %>
+                                <li><%= display_ingredients(:add, item.add) %></li>
+                            <% end %>
+                            <% if item.remove.present? %>
+                                <li><%= display_ingredients(:remove, item.remove) %></li>
+                            <% end %>
+                        </ul>
+                    </li>
+                <% end %>
+            </ul>    
+        </td>
+    </tr>
+    </table>  
+    <p></p>
+<% end %>    
+    
